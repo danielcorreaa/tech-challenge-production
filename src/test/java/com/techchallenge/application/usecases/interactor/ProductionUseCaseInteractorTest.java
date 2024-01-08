@@ -44,7 +44,10 @@ class ProductionUseCaseInteractorTest {
     ProductionUseCase productionUseCase;
 
     @Autowired
-    ProductionRepository repository;
+    ProductionRepository productionRepository;
+
+    @Autowired
+    ProductRepository productRepository;
 
     MockObject mockObject;
 
@@ -87,7 +90,7 @@ class ProductionUseCaseInteractorTest {
         createProduction();
         Production byId = productionUseCase.findById("5256");
         assertEquals("5256", byId.getOrderId());
-        assertEquals("RECEBIDO", byId.getStatus());
+        assertEquals("RECEBIDO", byId.getStatusValue());
         assertEquals(3, byId.getProducts().size());
     }
     void testFindAll(){
@@ -117,7 +120,7 @@ class ProductionUseCaseInteractorTest {
     }
 
     @Test
-    void testFinish(String orderId){
+    void testFinish(){
         createProduction();
         productionUseCase.preparation("5256");
         productionUseCase.ready("5256");
@@ -129,7 +132,8 @@ class ProductionUseCaseInteractorTest {
     }
 
     void clean(){
-        repository.deleteAll();
+        productRepository.deleteAll();
+        productionRepository.deleteAll();
     }
     private void createProduction() {
         Production recebido = mockObject.getProduction("5256", "RECEBIDO", mockObject.getProducts());
