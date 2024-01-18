@@ -1,0 +1,13 @@
+{
+
+  "products": [
+    {
+      "sku": "6584ab97a00f0a786bf3698f",
+      "title": "X SALADA",
+      "category": "LANCHE",
+      "description": "lanche",
+      "price": 15.1,
+      "image": "string"
+    }
+  ]
+}

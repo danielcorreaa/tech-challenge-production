@@ -22,8 +22,12 @@ spring:
 
 kafka:
   topic:
+    producer:
+      orders: status.order
     consumer:
-      orders: tech.orders
-      groupId: production9
-      payment:  tech.payment
-      paymentId: groupPayment
+      orders:
+        topic: tech.orders
+        groupId: production9
+      payment:
+        topic: tech.payment
+        groupId: groupPayment

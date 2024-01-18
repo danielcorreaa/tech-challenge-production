@@ -1,111 +1,106 @@
 package com.techchallenge.infrastructure.message.consumer;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.techchallenge.MysqlTestConfig;
+import com.techchallenge.application.gateway.ProductionGateway;
 import com.techchallenge.application.gateway.StatusOutboxGateway;
 import com.techchallenge.application.usecases.ProductionUseCase;
+import com.techchallenge.application.usecases.interactor.ProductionUseCaseInteractor;
 import com.techchallenge.core.response.JsonUtils;
+import com.techchallenge.core.response.ObjectMapperConfig;
+import com.techchallenge.core.utils.FileUtils;
 import com.techchallenge.domain.entity.Production;
-import com.techchallenge.domain.entity.StatusOutbox;
-import com.techchallenge.infrastructure.message.consumer.OrderConsumer;
+import com.techchallenge.infrastructure.gateways.ProductionRepositoryGateway;
+import com.techchallenge.infrastructure.gateways.StatusOutboxRepositoryGateway;
 import com.techchallenge.infrastructure.message.consumer.dto.OrderDto;
 import com.techchallenge.infrastructure.message.consumer.mapper.ProductionMessageMapper;
-import com.techchallenge.utils.FileUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import com.techchallenge.infrastructure.persistence.entity.ProductionEntity;
+import com.techchallenge.infrastructure.persistence.mapper.ProductionEntityMapper;
+import com.techchallenge.infrastructure.persistence.mapper.StatusEntityOutboxMapper;
+import com.techchallenge.infrastructure.persistence.repository.ProductRepository;
+import com.techchallenge.infrastructure.persistence.repository.ProductionRepository;
+import com.techchallenge.infrastructure.persistence.repository.StatusEntityOutboxRespository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
+import org.mockito.Mock;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration( classes = {MysqlTestConfig.class})
-@TestPropertySource(locations = {"classpath:application-test.properties"})
-@Testcontainers
 class OrderConsumerTest {
 
     OrderConsumer orderConsumer;
 
-    @Autowired
     private ProductionUseCase productionUseCase;
 
-    @Autowired
-    private ProductionMessageMapper mapper;
+    private ProductionMessageMapper productionMessageMapper;
+
+    private ProductionGateway productionGateway;
 
     JsonUtils jsonUtils;
 
-    @Autowired
-    StatusOutboxGateway statusOutboxGateway;
+    @Mock
+    private ProductionRepository productionRepository;
 
+    @Mock
+    private ProductRepository productRepository;
 
-    @Container
-    static MySQLContainer mySQLContainer = new MySQLContainer(DockerImageName.parse("mysql:latest"));
+    private StatusOutboxGateway statusOutboxGateway;
+    private ProductionEntityMapper productionEntityMapper;
 
-    @Container
-    static KafkaContainer kafkaContainer =
-            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"));
+    @Mock
+    private StatusEntityOutboxRespository statusEntityOutboxRespository;
+    private StatusEntityOutboxMapper statusEntityOutboxMapper;
 
-    @DynamicPropertySource
-    static void overrrideMongoDBContainerProperties(DynamicPropertyRegistry registry){
-        registry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", mySQLContainer::getUsername);
-        registry.add("spring.datasource.password", mySQLContainer::getPassword);
-
-        registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
-
-    }
-    @BeforeAll
-    static void setUp(){
-        mySQLContainer.withReuse(true);
-        mySQLContainer.start();
-        kafkaContainer.withReuse(true);
-        kafkaContainer.start();
-    }
-    @AfterAll
-    static void setDown(){
-        mySQLContainer.stop();
-        kafkaContainer.stop();
-    }
 
     @BeforeEach
     void start(){
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        jsonUtils = new JsonUtils(objectMapper);
-        orderConsumer = new OrderConsumer(productionUseCase, mapper);
+        jsonUtils = new JsonUtils(new ObjectMapperConfig().objectMapper());
+        statusEntityOutboxMapper = new StatusEntityOutboxMapper();
+        statusOutboxGateway = new StatusOutboxRepositoryGateway(statusEntityOutboxRespository, statusEntityOutboxMapper);
+        productionEntityMapper = new ProductionEntityMapper();
+        productionGateway = new ProductionRepositoryGateway(productionRepository, productRepository, statusOutboxGateway, productionEntityMapper);
+        productionUseCase = new ProductionUseCaseInteractor(productionGateway);
+        productionMessageMapper = new ProductionMessageMapper();
+        orderConsumer = new OrderConsumer(productionUseCase, productionMessageMapper);
     }
 
 
     @Test
-    void testListenOrder(){
-       Optional<OrderDto> orderDto = jsonUtils.parse(new FileUtils().getFile("/data/orders.json"), OrderDto.class);
-       orderConsumer.listenOrder(orderDto.orElse(null));
-       productionUseCase.findById("6593732dcfdb826a875770ff");
+    void testListenOrder_withSucess() throws InterruptedException {
+       OrderDto orderDto = jsonUtils.parse(new FileUtils().getFile("/data/order.json"), OrderDto.class).get();
+       Production production = productionMessageMapper.toProduction(orderDto);
+       ProductionEntity entity = productionEntityMapper.toProductionEntity(production);
+       when(productionRepository.save(any(ProductionEntity.class))).thenReturn(entity);
+       when(productRepository.saveAll(anyList())).thenReturn(entity.getProducts());
+       Acknowledgment ack = spy(Acknowledgment.class);
 
-       Production response = productionUseCase.findById("6593732dcfdb826a875770ff");
-       List<StatusOutbox> byNotSend = statusOutboxGateway.findByNotSend();
+       orderConsumer.listenOrder(orderDto, ack);
 
-       assertEquals("RECEBIDO", response.getStatusValue());
-       assertEquals(0, byNotSend.size());
+
+       boolean messageConsumed = orderConsumer.getLatch().await(10, TimeUnit.SECONDS);
+       assertTrue(messageConsumed);
+       verify(ack, times(1)).acknowledge();
+       verify(productionRepository, times(1)).save(any());
+       verify(productRepository, times(1)).saveAll(anyList());
     }
 
-
+    @Test
+    void testListenOrder_withError() throws InterruptedException {
+        OrderDto orderDto = jsonUtils.parse(new FileUtils().getFile("/data/orderError.json"), OrderDto.class).get();
+        Acknowledgment ack = spy(Acknowledgment.class);
+        orderConsumer.listenOrder(orderDto, ack);
+        boolean messageConsumed = orderConsumer.getLatch().await(10, TimeUnit.SECONDS);
+        assertFalse(messageConsumed);
+        verify(ack, never()).acknowledge();
+        verify(productionRepository, never()).save(any());
+        verify(productRepository, never()).saveAll(anyList());
+    }
 
 }

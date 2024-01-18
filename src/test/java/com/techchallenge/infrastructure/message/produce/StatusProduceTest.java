@@ -1,10 +1,10 @@
 package com.techchallenge.infrastructure.message.produce;
 
 import com.techchallenge.MysqlTestConfig;
-import com.techchallenge.application.gateway.MessageGateway;
 import com.techchallenge.application.gateway.StatusOutboxGateway;
+import com.techchallenge.core.kafka.produce.TopicProducer;
 import com.techchallenge.domain.entity.StatusOutbox;
-import com.techchallenge.infrastructure.message.gateways.MessageStatusGateway;
+import com.techchallenge.infrastructure.message.produce.dto.StatusDto;
 import com.techchallenge.infrastructure.persistence.repository.StatusEntityOutboxRespository;
 import com.techchallenge.utils.MockObject;
 import org.junit.jupiter.api.AfterAll;
@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -38,13 +37,14 @@ import static org.mockito.Mockito.times;
 @Testcontainers
 class StatusProduceTest {
 
-    private StatusProduce produce;
+    StatusProduce produce;
 
     @Autowired
     StatusOutboxGateway statusOutboxGateway;
 
     @Mock
-    MessageGateway messageGateway;
+    TopicProducer<StatusDto> topicProducer;
+
 
     @Autowired
     StatusEntityOutboxRespository statusEntityOutboxRespository;
@@ -71,7 +71,7 @@ class StatusProduceTest {
 
     @BeforeEach
     void init(){
-        produce = new StatusProduce(statusOutboxGateway, messageGateway);
+        produce = new StatusProduce(statusOutboxGateway,topicProducer);
         clear();
     }
 
@@ -94,7 +94,7 @@ class StatusProduceTest {
         List<StatusOutbox> byNotSend = statusOutboxGateway.findByNotSend();
 
         assertEquals(0, byNotSend.size());
-        Mockito.verify(messageGateway, times(3)).send(any(), any());
+        Mockito.verify(topicProducer, times(3)).produce(any(), any());
     }
 
     private void insertAll() {

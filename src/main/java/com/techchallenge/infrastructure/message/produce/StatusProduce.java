@@ -1,9 +1,9 @@
 package com.techchallenge.infrastructure.message.produce;
 
-import com.techchallenge.application.gateway.MessageGateway;
 import com.techchallenge.application.gateway.StatusOutboxGateway;
+import com.techchallenge.core.kafka.produce.TopicProducer;
 import com.techchallenge.domain.entity.StatusOutbox;
-import lombok.extern.java.Log;
+import com.techchallenge.infrastructure.message.produce.dto.StatusDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,11 +19,11 @@ public class StatusProduce {
 
     private StatusOutboxGateway statusOutboxGateway;
 
-    private MessageGateway messageGateway;
+    private TopicProducer<StatusDto> topicProducer;
 
-    public StatusProduce(StatusOutboxGateway statusOutboxGateway, MessageGateway messageGateway) {
+    public StatusProduce(StatusOutboxGateway statusOutboxGateway, TopicProducer<StatusDto> topicProducer) {
         this.statusOutboxGateway = statusOutboxGateway;
-        this.messageGateway = messageGateway;
+        this.topicProducer = topicProducer;
     }
 
     @Scheduled(fixedDelay = MINUTE)
@@ -33,7 +33,7 @@ public class StatusProduce {
             log.info("No message found for send");
         }
         toSend.forEach(send -> {
-            messageGateway.send(send.getOrderId(), send.getStatus());
+            topicProducer.produce(send.getOrderId(), new StatusDto(send.getOrderId(), send.getStatus()));
             send.send();
             statusOutboxGateway.insert(send);
             log.info("Message send with success! orderId - {} - status - {} ", send.getOrderId(), send.getStatus());

@@ -93,9 +93,6 @@ class ProductionUseCaseInteractorTest {
         assertEquals("RECEBIDO", byId.getStatusValue());
         assertEquals(3, byId.getProducts().size());
     }
-    void testFindAll(){
-
-    }
 
     @Test
     void testPreparation(){
