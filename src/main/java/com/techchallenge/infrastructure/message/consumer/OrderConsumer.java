@@ -33,7 +33,6 @@ public class OrderConsumer {
             productionUseCase.insert(production);
             ack.acknowledge();
             latch.countDown();
-            System.out.println("N deveria aparecer");
         } catch (Exception ex){
             log.error("Message not process: "+ ex.getMessage());
         }

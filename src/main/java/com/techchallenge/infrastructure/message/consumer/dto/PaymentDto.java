@@ -1,5 +1,11 @@
 package com.techchallenge.infrastructure.message.consumer.dto;
 
 
-public record PaymentDto(String orderId, String status) {
+import com.fasterxml.jackson.annotation.JsonAlias;
+
+public record PaymentDto(
+        @JsonAlias("externalReference")
+        String orderId,
+        @JsonAlias("orderStatus")
+        String status) {
 }

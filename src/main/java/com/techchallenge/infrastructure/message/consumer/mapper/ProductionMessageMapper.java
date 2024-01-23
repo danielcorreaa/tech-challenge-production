@@ -16,7 +16,7 @@ public class ProductionMessageMapper {
     }
 
     public Product toProduct(ProductDto productDto){
-        return new Product(productDto.id(), productDto.title(), productDto.category(), productDto.description(),
+        return new Product(productDto.sku(), productDto.title(), productDto.category(), productDto.description(),
                     productDto.image());
     }
 
