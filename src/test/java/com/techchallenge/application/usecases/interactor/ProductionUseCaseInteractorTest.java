@@ -52,7 +52,7 @@ class ProductionUseCaseInteractorTest {
     MockObject mockObject;
 
     @Container
-    static MySQLContainer mySQLContainer = new MySQLContainer(DockerImageName.parse("mysql:latest"));
+    static MySQLContainer mySQLContainer = new MySQLContainer(DockerImageName.parse("mysql:8.0-debian"));
 
     @DynamicPropertySource
     static void overrrideMongoDBContainerProperties(DynamicPropertyRegistry registry){

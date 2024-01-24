@@ -5,6 +5,7 @@ import com.techchallenge.core.kafka.KafkaConsumerConfig;
 import com.techchallenge.core.kafka.produce.TopicProducer;
 import com.techchallenge.infrastructure.message.consumer.dto.OrderDto;
 import com.techchallenge.infrastructure.message.consumer.dto.PaymentDto;
+import com.techchallenge.infrastructure.message.produce.dto.StatusDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -42,6 +43,10 @@ public class MysqlTestConfig {
         return mock(KafkaConfig.class);
     }
 
-
+    @Primary
+    @Bean
+    public TopicProducer<StatusDto> topicProducer(){
+        return mock(TopicProducer.class);
+    }
 
 }

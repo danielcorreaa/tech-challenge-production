@@ -34,7 +34,7 @@ public class KafkaConfig {
     @Value(value = "${kafka.topic.consumer.payment.groupId}")
     private String groupIdPayment;
 
-    @Value(value = "${kafka.topic.producer.topic}")
+    @Value(value = "${kafka.topic.producer.status}")
     private String topic;
 
     @Bean
@@ -91,11 +91,6 @@ public class KafkaConfig {
     public TopicProducer<StatusDto> topicProducer(){
         return new TopicProducer<>(kafkaTemplate(), topic);
     }
-    @Bean
-    public StatusProduce statusProduce(StatusOutboxGateway statusOutboxGateway){
-        return new StatusProduce(statusOutboxGateway, topicProducer());
-    }
-
     @Bean
     public KafkaTopic kafkaTopic(){
         return new KafkaTopic(bootstrapAddress, topic);

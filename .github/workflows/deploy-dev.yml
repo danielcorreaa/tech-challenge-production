@@ -1,0 +1,29 @@
+name: Deploy
+on:
+  workflow_call:
+jobs:
+  develop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: configurando credenciais da AWS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.ID_CHAVE_ACESSO }}
+          aws-secret-access-key: ${{ secrets.CHAVE_SECRETA }}
+          aws-region: us-east-1
+      - name: Kubectl tool installer
+        uses: Azure/setup-kubectl@v3
+
+      - run: aws sts get-caller-identity
+
+      - run: aws eks update-kubeconfig --region us-east-1 --name dev
+
+      - run: kubectl get svc
+
+      - run: kubectl apply -f k8s/production-deployment.yaml
+      - run: kubectl apply -f k8s/production-service.yaml
+      - run: kubectl set image deployment/app-tech-challenge production=daniel36/tech-challenge-production:${{github.run_number}}
+      - run: kubectl apply -f k8s/production-hpa.yaml
+      - run: kubectl get svc
+
