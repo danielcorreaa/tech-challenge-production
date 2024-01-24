@@ -23,7 +23,7 @@ jobs:
 
       - run: kubectl apply -f k8s/production-deployment.yaml
       - run: kubectl apply -f k8s/production-service.yaml
-      - run: kubectl set image deployment/app-tech-challenge production=daniel36/tech-challenge-production:${{github.run_number}}
+      - run: kubectl set image deployment/production production=daniel36/tech-challenge-production:${{github.run_number}}
       - run: kubectl apply -f k8s/production-hpa.yaml
       - run: kubectl get svc
 
