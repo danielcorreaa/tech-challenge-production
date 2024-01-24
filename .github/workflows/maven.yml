@@ -108,5 +108,5 @@ jobs:
   deploy-prod:
       needs: docker-pull-image
       if: github.ref == 'refs/heads/main'
-      uses: ./.github/workflows/deploy-orid.yml
+      uses: ./.github/workflows/deploy-prod.yml
       secrets: inherit
