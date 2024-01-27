@@ -25,20 +25,20 @@ public class StepDefinition {
 
     private Response response;
 
+    private String orderId;
+
     private String ENDPOINT_PRODUCTION = "http://localhost:8085/api/v1/production";
 
-    String orderId;
+
 
     @Dado("Dado que tenho um pedido na fila")
     public void dado_que_tenho_um_pedido_na_fila() {
-        receiveOrders();
-        receivePayment();
-
+       orderId = "5256";
     }
     @Quando("e quero passar ele para pronto")
     public void e_quero_passar_ele_para_pronto() {
         response = given().contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(ENDPOINT_PRODUCTION+"/ready/{orderId}","6593732dcfdb826a875770ff" );
+                .when().put(ENDPOINT_PRODUCTION+"/ready/{orderId}",orderId );
 
     }
     @Entao("devo conseguir alterar o status")
@@ -49,7 +49,7 @@ public class StepDefinition {
 
     @Dado("Dado que tenho um pedido no status pronto")
     public void dado_que_tenho_um_pedido_no_status_pronto() {
-        orderId = "6593732dcfdb826a875770ff";
+        orderId = "5256";
     }
     @Quando("e quero passar ele para finalizado")
     public void e_quero_passar_ele_para_finalizado() {
@@ -63,7 +63,7 @@ public class StepDefinition {
 
     @Dado("Dado que tenho um pedido cadastrado")
     public void dado_que_tenho_um_pedido_cadastrado() {
-        orderId = "6593732dcfdb826a875770ff";
+        orderId = "5256";
     }
     @Dado("e tenho o id do pedido")
     public void e_tenho_o_id_do_pedido() {
@@ -76,44 +76,6 @@ public class StepDefinition {
     }
 
 
-
-    public void receiveOrders(){
-        JsonUtils jsonUtils = new JsonUtils(new ObjectMapperConfig().objectMapper());
-        OrderDto orderDto = jsonUtils.parse(new FileUtils().getFile("/data/order.json"), OrderDto.class).get();
-        topicProducer().produce(orderDto);
-    }
-
-    public void receivePayment(){
-        JsonUtils jsonUtils = new JsonUtils(new ObjectMapperConfig().objectMapper());
-        PaymentDto paymentDto = jsonUtils.parse(new FileUtils() .getFile("/data/status-order.json"), PaymentDto.class).get();
-        topicProducerPayment().produce(paymentDto);
-    }
-
-
-
-    public KafkaProducerConfig kafkaProducer(){
-        return new KafkaProducerConfig("localhost:9092");
-    }
-
-    @Bean
-    public KafkaTemplate<String, OrderDto> kafkaTemplate() {
-        return kafkaProducer().kafkaTemplate();
-    }
-
-    @Bean
-    public TopicProducer<OrderDto> topicProducer(){
-        return new TopicProducer<>(kafkaTemplate(), "tech.orders");
-    }
-
-    @Bean
-    public KafkaTemplate<String, PaymentDto> kafkaTemplatePayment() {
-        return kafkaProducer().kafkaTemplate();
-    }
-
-    @Bean
-    public TopicProducer<PaymentDto> topicProducerPayment(){
-        return new TopicProducer<>(kafkaTemplatePayment(), "tech.payment");
-    }
 
 
 

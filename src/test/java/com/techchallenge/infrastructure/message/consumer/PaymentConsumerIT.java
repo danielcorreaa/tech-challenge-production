@@ -1,8 +1,6 @@
 package com.techchallenge.infrastructure.message.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techchallenge.KafkaTestConfig;
-import com.techchallenge.MysqlTestConfig;
 import com.techchallenge.application.gateway.StatusOutboxGateway;
 import com.techchallenge.application.usecases.ProductionUseCase;
 import com.techchallenge.core.kafka.KafkaProducerConfig;
@@ -11,15 +9,11 @@ import com.techchallenge.core.response.JsonUtils;
 import com.techchallenge.core.response.ObjectMapperConfig;
 import com.techchallenge.core.utils.FileUtils;
 import com.techchallenge.domain.entity.Production;
-import com.techchallenge.domain.entity.StatusOutbox;
-import com.techchallenge.domain.enums.StatusOrder;
-import com.techchallenge.infrastructure.message.consumer.dto.OrderDto;
 import com.techchallenge.infrastructure.message.consumer.dto.PaymentDto;
 import com.techchallenge.infrastructure.message.consumer.mapper.ProductionMessageMapper;
-import com.techchallenge.infrastructure.message.produce.dto.StatusDto;
 import com.techchallenge.infrastructure.persistence.repository.ProductRepository;
 import com.techchallenge.infrastructure.persistence.repository.ProductionRepository;
-import com.techchallenge.utils.MockObject;
+import com.techchallenge.utils.ProductionHelper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -170,7 +164,7 @@ class PaymentConsumerIT {
     }
 
     private void loadDb() {
-        List<Production> response = new MockObject().getProductions();
+        List<Production> response = new ProductionHelper().getProductions();
         response.stream().forEach(productionUseCase::insert);
     }
 

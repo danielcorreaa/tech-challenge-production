@@ -6,7 +6,7 @@ import com.techchallenge.domain.entity.Production;
 import com.techchallenge.domain.valueobject.Product;
 import com.techchallenge.infrastructure.persistence.repository.ProductRepository;
 import com.techchallenge.infrastructure.persistence.repository.ProductionRepository;
-import com.techchallenge.utils.MockObject;
+import com.techchallenge.utils.ProductionHelper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +42,7 @@ class ProductionUseCasaIT {
     @Autowired
     ProductRepository productRepository;
 
-    MockObject mockObject;
+    ProductionHelper mockObject;
 
     @Container
     static MySQLContainer mySQLContainer = new MySQLContainer(DockerImageName.parse("mysql:8.0-debian"));
@@ -67,7 +67,7 @@ class ProductionUseCasaIT {
     @BeforeEach
     void start(){
         clean();
-        mockObject = new MockObject();
+        mockObject = new ProductionHelper();
     }
 
     @Test

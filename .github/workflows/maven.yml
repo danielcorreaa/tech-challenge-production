@@ -56,7 +56,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - run: mvn clean install -P unit-test
-      - run: docker-compose up -d
+      - run: docker-compose up -d --build
       - run: docker ps
       - uses: GuillaumeFalourd/wait-sleep-action@v1
         with:

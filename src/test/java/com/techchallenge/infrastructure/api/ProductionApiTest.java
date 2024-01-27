@@ -20,7 +20,7 @@ import com.techchallenge.infrastructure.persistence.mapper.StatusEntityOutboxMap
 import com.techchallenge.infrastructure.persistence.repository.ProductRepository;
 import com.techchallenge.infrastructure.persistence.repository.ProductionRepository;
 import com.techchallenge.infrastructure.persistence.repository.StatusEntityOutboxRespository;
-import com.techchallenge.utils.MockObject;
+import com.techchallenge.utils.ProductionHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -80,8 +80,8 @@ class ProductionApiTest {
 
     @Test
     void testUpdateToReady() throws Exception {
-        List<ProductEntity> products = new MockObject().getProducEntities();
-        ProductionEntity production = new MockObject().getProductionEntity("85255", "EM_PREPARACAO", products );
+        List<ProductEntity> products = new ProductionHelper().getProducEntities();
+        ProductionEntity production = new ProductionHelper().getProductionEntity("85255", "EM_PREPARACAO", products );
         when(productionRepository.findById("85255")).thenReturn(Optional.of(production));
 
         MvcResult mvcResult = mockMvc.perform(put("/api/v1/production/ready/85255").contentType(MediaType.APPLICATION_JSON))
@@ -101,8 +101,8 @@ class ProductionApiTest {
 
     @Test
     void testUpdateToFinish() throws Exception {
-        List<ProductEntity> products = new MockObject().getProducEntities();
-        ProductionEntity production = new MockObject().getProductionEntity("85255", "PRONTO", products );
+        List<ProductEntity> products = new ProductionHelper().getProducEntities();
+        ProductionEntity production = new ProductionHelper().getProductionEntity("85255", "PRONTO", products );
         when(productionRepository.findById("85255")).thenReturn(Optional.of(production));
 
         MvcResult mvcResult = mockMvc.perform(put("/api/v1/production/finish/85255").contentType(MediaType.APPLICATION_JSON))
@@ -123,8 +123,8 @@ class ProductionApiTest {
 
     @Test
     void tesFindById() throws Exception {
-        List<ProductEntity> products = new MockObject().getProducEntities();
-        ProductionEntity production = new MockObject().getProductionEntity("85255", "PRONTO", products );
+        List<ProductEntity> products = new ProductionHelper().getProducEntities();
+        ProductionEntity production = new ProductionHelper().getProductionEntity("85255", "PRONTO", products );
         when(productionRepository.findById("85255")).thenReturn(Optional.of(production));
 
         MvcResult mvcResult = mockMvc.perform(get("/api/v1/production/find/85255")
@@ -147,8 +147,8 @@ class ProductionApiTest {
 
     @Test
     void tesFindByIdNotFound() throws Exception {
-        List<ProductEntity> products = new MockObject().getProducEntities();
-        ProductionEntity production = new MockObject().getProductionEntity("85255", "PRONTO", products );
+        List<ProductEntity> products = new ProductionHelper().getProducEntities();
+        ProductionEntity production = new ProductionHelper().getProductionEntity("85255", "PRONTO", products );
         when(productionRepository.findById("555")).thenReturn(Optional.of(production));
 
         MvcResult mvcResult = mockMvc.perform(get("/api/v1/production/find/85255")
