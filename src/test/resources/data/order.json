@@ -1,0 +1,21 @@
+{
+  "id": "6593732dcfdb826a875770ff",
+  "customer": {
+    "cpf": "328.399.928-76",
+    "name": "Daniel Aleixo Corre",
+    "email": "daniel@email"
+  },
+  "products": [
+    {
+      "sku": "6584ab97a00f0a786bf3698f",
+      "title": "X SALADA",
+      "category": "LANCHE",
+      "description": "lanche",
+      "price": 15.1,
+      "image": "string"
+    }
+  ],
+  "minutesDurationOrder": 0,
+  "statusOrder": "RECEBIDO",
+  "statusOrderString": "RECEBIDO"
+}
