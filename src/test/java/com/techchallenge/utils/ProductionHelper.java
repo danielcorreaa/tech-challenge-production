@@ -48,18 +48,17 @@ public class ProductionHelper {
 
 
     public List<ProductEntity> getProducEntities() {
-
         List<String> skus  = List.of("1222", "4345", "98001");
         List<String> titles  = List.of("X Salada Banco", "Coca Cola 600 ml", "Bolo Chocolate");
         List<String> categories  = List.of("LANCHE", "BEBIDA", "SOBREMESA");
         List<ProductEntity> response = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            response.add(getProducEntity(Long.valueOf(i), skus.get(i), titles.get(i), categories.get(i)));
+            response.add(getProducEntity(String.valueOf(i), skus.get(i), titles.get(i), categories.get(i)));
         }
         return response;
     }
 
-    public ProductEntity getProducEntity(Long id, String sku, String title, String category) {
+    public ProductEntity getProducEntity(String id, String sku, String title, String category) {
         return ProductEntity.builder().id(id).image("").sku(sku).title(title).category(category).description("test").build();
     }
 

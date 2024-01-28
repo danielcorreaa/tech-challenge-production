@@ -36,8 +36,8 @@ public class ProductionRepositoryGateway implements ProductionGateway {
     public Production toReceive(Production production) {
         ProductionEntity productionEntity = mapper.toProductionEntity(production);
         productionEntity = productionRepository.save(productionEntity);
-
-        List<ProductEntity> productEntities = productRepository.saveAll(mapper.toProductEntities(production, productionEntity));
+        var products = mapper.toProductEntities(production, productionEntity);
+        List<ProductEntity> productEntities = productRepository.saveAll(products);
         productionEntity.setProducts(productEntities);
 
         return mapper.toProduction(productionEntity);

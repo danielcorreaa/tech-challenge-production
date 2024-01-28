@@ -14,8 +14,8 @@ import lombok.*;
 public class ProductEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	@Column(name = "id", nullable = false)
+	private String id;
 	private String sku;
 	private String title;
 	private String category;
@@ -24,6 +24,7 @@ public class ProductEntity {
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "production_orderId")
 	private ProductionEntity production;
+
 
 
 }

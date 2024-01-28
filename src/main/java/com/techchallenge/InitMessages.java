@@ -30,15 +30,20 @@ public class InitMessages implements  ApplicationListener<ContextRefreshedEvent>
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        Product product = new Product("1223", "X salada", "LANCHE", "test", "");
-        Production production = new Production("12234", "RECEBIDO", List.of(product));
+        Product product = new Product("852369001", "X salada", "LANCHE", "test", "");
+        Production production = new Production("852369", "RECEBIDO", List.of(product));
         Production insert = productionUseCase.insert(production);
-        createProduction();
-        productionUseCase.preparation("5256");
+
+        createProduction("852370");
+        productionUseCase.preparation("852370");
+
+        createProduction("852371");
+        productionUseCase.preparation("852371");
+        productionUseCase.ready("852371");
     }
 
-    private void createProduction() {
-        Production recebido = getProduction("5256", "RECEBIDO", getProducts());
+    private void createProduction(String orderId) {
+        Production recebido = getProduction(orderId, "RECEBIDO", getProducts());
         productionUseCase.insert(recebido);
     }
 

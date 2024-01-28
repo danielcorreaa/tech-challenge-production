@@ -14,5 +14,5 @@ Funcionalidade: API - Production
   Cenário: Pesquisar Pedido
     Dado Dado que tenho um pedido cadastrado
     E e tenho o id do pedido
-    Entao devo conseguir buscar o pedido que está sendo produzido
+    Entao devo conseguir buscar o pedido que esta sendo produzido
 

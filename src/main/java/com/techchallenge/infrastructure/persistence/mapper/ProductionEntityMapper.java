@@ -16,6 +16,7 @@ public class ProductionEntityMapper {
     public List<ProductEntity> toProductEntities(Production production, ProductionEntity entity) {
        return production.getProducts().stream().map(product ->
                 ProductEntity.builder()
+                        .id(getIdProduct(production.getOrderId(), product.getSku()))
                         .sku(product.getSku())
                         .image(product.getImage())
                         .description(product.getDescription())
@@ -24,6 +25,10 @@ public class ProductionEntityMapper {
                         .production(entity)
                         .build()
         ).toList();
+    }
+
+    private String getIdProduct(String orderId, String sku) {
+        return orderId +"--"+ sku;
     }
 
 
