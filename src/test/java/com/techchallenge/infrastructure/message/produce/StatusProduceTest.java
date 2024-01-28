@@ -6,7 +6,7 @@ import com.techchallenge.core.kafka.produce.TopicProducer;
 import com.techchallenge.domain.entity.StatusOutbox;
 import com.techchallenge.infrastructure.message.produce.dto.StatusDto;
 import com.techchallenge.infrastructure.persistence.repository.StatusEntityOutboxRespository;
-import com.techchallenge.utils.MockObject;
+import com.techchallenge.utils.ProductionHelper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,7 +98,7 @@ class StatusProduceTest {
     }
 
     private void insertAll() {
-        new MockObject().buildListStatusOutboxEntity().forEach(statusEntityOutboxRespository::save);
+        new ProductionHelper().buildListStatusOutboxEntity().forEach(statusEntityOutboxRespository::save);
     }
 
     private void clear() {

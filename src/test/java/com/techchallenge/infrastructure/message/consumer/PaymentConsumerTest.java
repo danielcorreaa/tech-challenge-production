@@ -1,7 +1,5 @@
 package com.techchallenge.infrastructure.message.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.techchallenge.MysqlTestConfig;
 import com.techchallenge.application.gateway.ProductionGateway;
 import com.techchallenge.application.gateway.StatusOutboxGateway;
 import com.techchallenge.application.usecases.ProductionUseCase;
@@ -10,8 +8,6 @@ import com.techchallenge.core.response.JsonUtils;
 import com.techchallenge.core.response.ObjectMapperConfig;
 import com.techchallenge.core.utils.FileUtils;
 import com.techchallenge.domain.entity.Production;
-import com.techchallenge.domain.entity.StatusOutbox;
-import com.techchallenge.domain.enums.StatusOrder;
 import com.techchallenge.infrastructure.gateways.ProductionRepositoryGateway;
 import com.techchallenge.infrastructure.gateways.StatusOutboxRepositoryGateway;
 import com.techchallenge.infrastructure.message.consumer.dto.PaymentDto;
@@ -23,23 +19,14 @@ import com.techchallenge.infrastructure.persistence.mapper.StatusEntityOutboxMap
 import com.techchallenge.infrastructure.persistence.repository.ProductRepository;
 import com.techchallenge.infrastructure.persistence.repository.ProductionRepository;
 import com.techchallenge.infrastructure.persistence.repository.StatusEntityOutboxRespository;
-import com.techchallenge.utils.MockObject;
+import com.techchallenge.utils.ProductionHelper;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -91,7 +78,7 @@ class PaymentConsumerTest {
     @Test
     void testListenPayment_withSuccess() throws InterruptedException {
         String orderId = "10998";
-        List<Production> response = new MockObject().getProductions();
+        List<Production> response = new ProductionHelper().getProductions();
         ProductionEntity entity = productionEntityMapper.toProductionEntity(response.get(0));
         PaymentDto paymentDto = jsonUtils.parse(new FileUtils()
                 .getFile("/data/status.json"), PaymentDto.class).get();
@@ -114,7 +101,7 @@ class PaymentConsumerTest {
     @Test
     void testListenPayment_withError() throws InterruptedException {
         String orderId = "10998";
-        List<Production> response = new MockObject().getProductions();
+        List<Production> response = new ProductionHelper().getProductions();
         ProductionEntity entity = productionEntityMapper.toProductionEntity(response.get(0));
         PaymentDto paymentDto = jsonUtils.parse(new FileUtils()
                 .getFile("/data/statusError.json"), PaymentDto.class).get();

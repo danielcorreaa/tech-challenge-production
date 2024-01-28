@@ -7,30 +7,69 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   unit-test:
+    name: Test Coverage
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
+
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven       
-    - run: mvn test      
-    - name: Generate JaCoCo Badge
-      id: jacoco    
-      # You may pin to the exact commit or the version.
-      # uses: cicirello/jacoco-badge-generator@f33476a5a3fd5a4f77cb5eef2ebe728c1dd5b921
-      uses: cicirello/jacoco-badge-generator@v2.11.0
-      with:  
-        fail-if-coverage-less-than: 8
-        # Enables failing workflow run when branches coverage below specified threshold.
-        fail-if-branches-less-than: 8
-        # Enables failing workflow if coverage is less than it was on previous run.
-        fail-on-coverage-decrease: 8
-        fail-on-branches-decrease: 8
-  sonar:
+          cache: maven
+      - run: mvn test -P unit-test
+      - name: Generate JaCoCo Badge
+        id: jacoco
+        # You may pin to the exact commit or the version.
+        # uses: cicirello/jacoco-badge-generator@f33476a5a3fd5a4f77cb5eef2ebe728c1dd5b921
+        uses: cicirello/jacoco-badge-generator@v2.11.0
+        with:
+          fail-if-coverage-less-than: 0.8
+          generate-coverage-endpoint: true
+          generate-summary: true
+
+  integration-test:
     needs: unit-test
+    name: Test Integration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - run: mvn test -P integration-test
+
+  bdd-test:
+    needs: integration-test
+    name: Test BDD
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - run: mvn clean install -P unit-test
+      - run: docker-compose up -d --build
+      - run: docker ps
+      - uses: GuillaumeFalourd/wait-sleep-action@v1
+        with:
+          time: '30' # for 30 seconds
+      - run: mvn test -P system-test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Cucumber Reports
+          path: ./target/cucumber-reports/cucumber.html
+      - run: docker-compose down
+
+  sonar:
+    needs: bdd-test
     name: Build and analyze
     runs-on: ubuntu-latest
     steps:
@@ -58,22 +97,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=danielcorreaa_tech-challenge-production
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=danielcorreaa_tech-challenge-production -P unit-test
 
   build:
-      runs-on: ubuntu-latest
-      needs: sonar
-      steps:
-        - uses: actions/checkout@v4
-        - name: Set up JDK 17
-          uses: actions/setup-java@v3
-          with:
-            java-version: '17'
-            distribution: 'temurin'
-            cache: maven
-        - run: mvn clean install --file pom.xml
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: sonar
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - run: mvn clean install -P unit-test --file pom.xml
 
   docker-pull-image:
+      name: Pull Image Docker Hub
       if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/main'
       needs: build
       runs-on: ubuntu-latest
@@ -93,20 +134,28 @@ jobs:
         - name: Push image docker
           run: docker push daniel36/tech-challenge-production:${{github.run_number}}
 
+        - name: Build docker image latest
+          run: docker build -t daniel36/tech-challenge-product:latest .
+        - name: Push image docker latest
+          run: docker push daniel36/tech-challenge-product:latest
+
   deploy-dev:
-      needs: docker-pull-image
-      if: github.ref == 'refs/heads/develop'
-      uses: ./.github/workflows/deploy-dev.yml
-      secrets: inherit
+    name: Deploy dev aws
+    needs: docker-pull-image
+    if: github.ref == 'refs/heads/develop'
+    uses: ./.github/workflows/deploy-dev.yml
+    secrets: inherit
 
   deploy-qa:
-      needs: docker-pull-image
-      if: github.ref == 'refs/heads/release'
-      uses: ./.github/workflows/deploy-release.yml
-      secrets: inherit
+    name: Deploy qa aws
+    needs: docker-pull-image
+    if: github.ref == 'refs/heads/release'
+    uses: ./.github/workflows/deploy-release.yml
+    secrets: inherit
 
   deploy-prod:
-      needs: docker-pull-image
-      if: github.ref == 'refs/heads/main'
-      uses: ./.github/workflows/deploy-prod.yml
-      secrets: inherit
+    name: Deploy production aws
+    needs: docker-pull-image
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/deploy-prod.yml
+    secrets: inherit

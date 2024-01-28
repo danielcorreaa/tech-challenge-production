@@ -1,19 +1,12 @@
 package com.techchallenge.application.usecases.interactor;
 
 import com.techchallenge.MysqlTestConfig;
-import com.techchallenge.application.gateway.ProductionGateway;
-import com.techchallenge.application.gateway.StatusOutboxGateway;
 import com.techchallenge.application.usecases.ProductionUseCase;
 import com.techchallenge.domain.entity.Production;
 import com.techchallenge.domain.valueobject.Product;
-import com.techchallenge.infrastructure.gateways.ProductionRepositoryGateway;
-import com.techchallenge.infrastructure.gateways.StatusOutboxRepositoryGateway;
-import com.techchallenge.infrastructure.persistence.mapper.ProductionEntityMapper;
-import com.techchallenge.infrastructure.persistence.mapper.StatusEntityOutboxMapper;
 import com.techchallenge.infrastructure.persistence.repository.ProductRepository;
 import com.techchallenge.infrastructure.persistence.repository.ProductionRepository;
-import com.techchallenge.infrastructure.persistence.repository.StatusEntityOutboxRespository;
-import com.techchallenge.utils.MockObject;
+import com.techchallenge.utils.ProductionHelper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ContextConfiguration( classes = {MysqlTestConfig.class})
 @TestPropertySource(locations = {"classpath:application-test.properties"})
 @Testcontainers
-class ProductionUseCaseInteractorTest {
+class ProductionUseCasaIT {
 
     @Autowired
     ProductionUseCase productionUseCase;
@@ -49,7 +42,7 @@ class ProductionUseCaseInteractorTest {
     @Autowired
     ProductRepository productRepository;
 
-    MockObject mockObject;
+    ProductionHelper mockObject;
 
     @Container
     static MySQLContainer mySQLContainer = new MySQLContainer(DockerImageName.parse("mysql:8.0-debian"));
@@ -74,7 +67,7 @@ class ProductionUseCaseInteractorTest {
     @BeforeEach
     void start(){
         clean();
-        mockObject = new MockObject();
+        mockObject = new ProductionHelper();
     }
 
     @Test
