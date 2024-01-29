@@ -32,3 +32,11 @@ kafka:
         topic: tech.payment
         groupId: groupPayment
 
+swagger:
+  title: Microserviço de Produção
+  contact:
+    email: daniel.cor@outlook.com
+    name: Daniel Aleixo Correa
+    description: Microserviço desenvolvido para o curso de pós tech da FIAP
+    version: 1.0
+
