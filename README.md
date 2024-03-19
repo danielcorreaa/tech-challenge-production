@@ -11,7 +11,7 @@ Microsserviço responsável pelo gerenciamento de produção de pedidos
 ## Stack utilizada
 
 
-**Back-end:** Java, Spring Boot, Mongodb
+**Back-end:** Java, Spring Boot, Mysql, Kafka
 
 
 ## Documentação da API
@@ -138,6 +138,11 @@ Execute os comandos
 
 ````
 
+## Relatório RIPD
+*RELATÓRIO DE IMPACTO À PROTEÇÃO DE DADOS PESSOAIS*
+
+- [@RIPD](https://danielcorreaa.github.io/tech-challenge-product/RIPD.pdf)
+
 ## Documentação Saga
 
 ### Padrão escolhido: Coreografia 
@@ -147,4 +152,4 @@ Execute os comandos
 
 #### Desenho da solução
 
-![Desenho Padrão Saga coreografado.](/images/saga-diagrama.png)
+![Desenho Padrão Saga coreografado.](https://danielcorreaa.github.io/tech-challenge-production/images/saga-diagrama.png)
