@@ -141,7 +141,7 @@ Execute os comandos
 ## Relatório RIPD
 *RELATÓRIO DE IMPACTO À PROTEÇÃO DE DADOS PESSOAIS*
 
-- [@RIPD](https://danielcorreaa.github.io/tech-challenge-product/RIPD.pdf)
+- [@RIPD](https://danielcorreaa.github.io/tech-challenge-production/RIPD.pdf)
 
 ## Documentação Saga
 
