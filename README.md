@@ -105,7 +105,7 @@ No navegador
 Clone o projeto com a infraestrutura
 
 ```bash
-  git clone danielcorreaa/tech-challenge-infra-terraform-kubernetes
+  git clone https://github.com/danielcorreaa/tech-challenge-infra-terraform-kubernetes.git
 ```
 Entre no diretório do projeto
 
