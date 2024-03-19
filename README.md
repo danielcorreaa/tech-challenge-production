@@ -153,3 +153,5 @@ Execute os comandos
 #### Desenho da solução
 
 - [@Desenho Padrão Saga coreografado.](https://danielcorreaa.github.io/tech-challenge-production/images/saga-diagrama.png)
+
+![Desenho Padrão Saga coreografado.](/docs/images/saga-diagrama.png)
