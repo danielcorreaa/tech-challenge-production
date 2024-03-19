@@ -1,6 +1,7 @@
 package com.techchallenge.utils;
 
 import com.techchallenge.domain.entity.Production;
+import com.techchallenge.domain.enums.StatusOrder;
 import com.techchallenge.domain.valueobject.Product;
 import com.techchallenge.infrastructure.persistence.entity.ProductEntity;
 import com.techchallenge.infrastructure.persistence.entity.ProductionEntity;
@@ -14,7 +15,7 @@ public class ProductionHelper {
 
     public List<Production> getProductions(){        ;
        return List.of(
-               getProduction("10998", "RECEBIDO", getProducts()),
+               getProduction("65f39d78af5fc21d9f9e8b00", StatusOrder.EM_PREPARACAO.getValue(), getProducts()),
                getProduction("8521", "RECEBIDO", getProducts()),
                getProduction("985", "RECEBIDO", getProducts())
        );
@@ -30,7 +31,7 @@ public class ProductionHelper {
 
 
     public List<Product> getProducts(){
-        List<String> skus  = List.of("1222", "4345", "98001");
+        List<String> skus  = List.of("65efab871c5ba5178ce3e871", "65f30ebce7b04f544ccd8642", "65f30ed6e7b04f544ccd8643");
         List<String> titles  = List.of("X Salada Banco", "Coca Cola 600 ml", "Bolo Chocolate");
         List<String> categories  = List.of("LANCHE", "BEBIDA", "SOBREMESA");
         List<Product> response = new ArrayList<>();

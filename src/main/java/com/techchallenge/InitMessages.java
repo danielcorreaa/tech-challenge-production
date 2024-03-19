@@ -7,7 +7,9 @@ import com.techchallenge.core.response.JsonUtils;
 import com.techchallenge.core.response.ObjectMapperConfig;
 import com.techchallenge.core.utils.FileUtils;
 import com.techchallenge.domain.entity.Production;
+import com.techchallenge.domain.entity.StatusOutbox;
 import com.techchallenge.domain.valueobject.Product;
+import com.techchallenge.infrastructure.gateways.StatusOutboxRepositoryGateway;
 import com.techchallenge.infrastructure.message.consumer.dto.OrderDto;
 import com.techchallenge.infrastructure.message.consumer.dto.PaymentDto;
 import com.techchallenge.infrastructure.persistence.repository.ProductRepository;
@@ -23,9 +25,11 @@ import java.util.List;
 @Component
 public class InitMessages implements  ApplicationListener<ContextRefreshedEvent> {
     private ProductionUseCase productionUseCase;
+    private StatusOutboxRepositoryGateway statusOutboxRepositoryGateway;
 
-    public InitMessages(ProductionUseCase productionUseCase) {
+    public InitMessages(ProductionUseCase productionUseCase, StatusOutboxRepositoryGateway statusOutboxRepositoryGateway) {
         this.productionUseCase = productionUseCase;
+        this.statusOutboxRepositoryGateway = statusOutboxRepositoryGateway;
     }
 
     @Override
@@ -40,6 +44,15 @@ public class InitMessages implements  ApplicationListener<ContextRefreshedEvent>
         createProduction("852371");
         productionUseCase.preparation("852371");
         productionUseCase.ready("852371");
+        StatusOutbox statusOutbox1 = new StatusOutbox("852369001", production.getStatusValue());
+        statusOutbox1.send();
+        StatusOutbox statusOutbox2 = new StatusOutbox("852370", production.getStatusValue());
+        statusOutbox2.send();
+        StatusOutbox statusOutbox3 = new StatusOutbox("852371", production.getStatusValue());
+        statusOutbox3.send();
+        statusOutboxRepositoryGateway.insert(statusOutbox1);
+        statusOutboxRepositoryGateway.insert(statusOutbox2);
+        statusOutboxRepositoryGateway.insert(statusOutbox3);
     }
 
     private void createProduction(String orderId) {

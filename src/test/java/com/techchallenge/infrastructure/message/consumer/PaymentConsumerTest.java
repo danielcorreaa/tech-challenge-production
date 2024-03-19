@@ -8,6 +8,7 @@ import com.techchallenge.core.response.JsonUtils;
 import com.techchallenge.core.response.ObjectMapperConfig;
 import com.techchallenge.core.utils.FileUtils;
 import com.techchallenge.domain.entity.Production;
+import com.techchallenge.domain.enums.StatusOrder;
 import com.techchallenge.infrastructure.gateways.ProductionRepositoryGateway;
 import com.techchallenge.infrastructure.gateways.StatusOutboxRepositoryGateway;
 import com.techchallenge.infrastructure.message.consumer.dto.PaymentDto;
@@ -32,8 +33,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @ExtendWith(SpringExtension.class)
@@ -77,22 +78,32 @@ class PaymentConsumerTest {
 
     @Test
     void testListenPayment_withSuccess() throws InterruptedException {
-        String orderId = "10998";
-        List<Production> response = new ProductionHelper().getProductions();
-        ProductionEntity entity = productionEntityMapper.toProductionEntity(response.get(0));
+        String orderId = "65f39d78af5fc21d9f9e8b00";
+
         PaymentDto paymentDto = jsonUtils.parse(new FileUtils()
-                .getFile("/data/status.json"), PaymentDto.class).get();
+                .getFile("/data/payment.json"), PaymentDto.class).get();
+
+        Production production = new Production(paymentDto.orderId(),
+                StatusOrder.EM_PREPARACAO.name(),
+                productionMessageMapper.toProducts(paymentDto.products()));
+
+        ProductionEntity entity = productionEntityMapper.toProductionEntity(production);
+        AtomicInteger index = new AtomicInteger(0);
+        production.getProducts().forEach(sku -> {
+            entity.getProducts().get(index.get()).setSku(sku.getSku());
+            entity.getProducts().get(index.get()).setId(getIdProduct(orderId, sku.getSku()));
+            index.getAndIncrement();
+        });
 
         Acknowledgment ack = spy(Acknowledgment.class);
 
-        when(productionRepository.findById(orderId)).thenReturn(Optional.of(entity));
-
         when(productionRepository.save(any(ProductionEntity.class))).thenReturn(entity);
+
+        when(productRepository.saveAll(anyList())).thenReturn(entity.getProducts());
 
         paymentConsumer.listenPayment(paymentDto, ack);
         boolean messageConsumed = paymentConsumer.getLatch().await(10, TimeUnit.SECONDS);
         assertTrue(messageConsumed);
-        verify(productionRepository, times(1)).findById(orderId);
         verify(productionRepository, times(1)).save(any(ProductionEntity.class));
         verify(statusEntityOutboxRespository, times(1)).save(any(StatusOutboxEntity.class));
 
@@ -115,6 +126,10 @@ class PaymentConsumerTest {
         verify(productionRepository, never()).save(any(ProductionEntity.class));
         verify(statusEntityOutboxRespository, never()).save(any(StatusOutboxEntity.class));
 
+    }
+
+    private String getIdProduct(String orderId, String sku) {
+        return orderId +"--"+ sku;
     }
 
 }

@@ -39,7 +39,7 @@ public class ProductionRepositoryGateway implements ProductionGateway {
         var products = mapper.toProductEntities(production, productionEntity);
         List<ProductEntity> productEntities = productRepository.saveAll(products);
         productionEntity.setProducts(productEntities);
-
+        statusOutboxGateway.insert(new StatusOutbox(production.getOrderId(), production.getStatusValue()));
         return mapper.toProduction(productionEntity);
     }
 

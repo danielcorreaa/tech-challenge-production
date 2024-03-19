@@ -17,7 +17,7 @@ import java.util.List;
 public class StatusProduce {
 
     private static final long SECOND = 1000;
-    private static final long MINUTE = SECOND * 60;
+    private static final long MINUTE = SECOND * 20;
 
     private StatusOutboxGateway statusOutboxGateway;
 
@@ -31,7 +31,7 @@ public class StatusProduce {
     @Scheduled(fixedDelay = MINUTE)
     public void send(){
         List<StatusOutbox> toSend =  statusOutboxGateway.findByNotSend();
-        if(toSend.isEmpty()){
+            if(toSend.isEmpty()){
             log.info("No message found for send");
         }
         toSend.forEach(send -> {

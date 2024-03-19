@@ -1,6 +1,5 @@
 package com.techchallenge.config;
 
-import com.techchallenge.application.gateway.StatusOutboxGateway;
 import com.techchallenge.application.usecases.ProductionUseCase;
 import com.techchallenge.core.kafka.KafkaConsumerConfig;
 import com.techchallenge.core.kafka.KafkaProducerConfig;
@@ -8,11 +7,9 @@ import com.techchallenge.core.kafka.KafkaTopic;
 import com.techchallenge.core.kafka.produce.TopicProducer;
 import com.techchallenge.infrastructure.message.consumer.PaymentConsumer;
 import com.techchallenge.infrastructure.message.produce.dto.StatusDto;
-import com.techchallenge.infrastructure.message.consumer.OrderConsumer;
 import com.techchallenge.infrastructure.message.consumer.dto.OrderDto;
 import com.techchallenge.infrastructure.message.consumer.dto.PaymentDto;
 import com.techchallenge.infrastructure.message.consumer.mapper.ProductionMessageMapper;
-import com.techchallenge.infrastructure.message.produce.StatusProduce;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -99,11 +96,6 @@ public class KafkaConfig {
     @Bean
     public NewTopic newTopic(){
         return kafkaTopic().createTopic(3, (short) 1);
-    }
-
-    @Bean
-    public OrderConsumer orderConsumer(ProductionUseCase productionUseCase, ProductionMessageMapper mapper){
-        return new OrderConsumer(productionUseCase,mapper);
     }
 
     @Bean

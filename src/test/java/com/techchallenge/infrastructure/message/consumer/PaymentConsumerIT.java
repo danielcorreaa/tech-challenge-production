@@ -111,32 +111,18 @@ class PaymentConsumerIT {
     @Test
     void testListenPayment_withSuccess() throws InterruptedException {
         PaymentDto paymentDto = jsonUtils.parse(new FileUtils()
-                .getFile("/data/status.json"), PaymentDto.class).get();
+                .getFile("/data/payment.json"), PaymentDto.class).get();
 
         topicProducer().produce(paymentDto);
         boolean messageConsumed = paymentConsumer.getLatch().await(10, TimeUnit.SECONDS);
-        Production production = productionUseCase.findById("10998");
+        Production production = productionUseCase.findById("65f39d78af5fc21d9f9e8b00");
 
-        assertEquals("10998",production.getOrderId());
+        assertEquals("65f39d78af5fc21d9f9e8b00",production.getOrderId());
         assertEquals("EM_PREPARACAO", production.getStatusValue());
         assertEquals(3, production.getProducts().size());
-        assertEquals("1222", production.getProducts().get(0).getSku());
+        assertEquals("65efab871c5ba5178ce3e871", production.getProducts().get(0).getSku());
         assertTrue(messageConsumed);
     }
-
-    @Test
-    void testListenPayment_withError() throws InterruptedException {
-        PaymentDto paymentDto = jsonUtils.parse(new FileUtils()
-                .getFile("/data/statusError.json"), PaymentDto.class).get();
-        topicProducer().produce(paymentDto);
-        boolean messageConsumed = paymentConsumer.getLatch().await(10, TimeUnit.SECONDS);
-        Production production = productionUseCase.findById("10998");
-        assertEquals("RECEBIDO", production.getStatusValue());
-        assertEquals(3, production.getProducts().size());
-        assertFalse(messageConsumed);
-    }
-
-
 
     public KafkaProducerConfig kafkaProducer(){
         return new KafkaProducerConfig(kafkaContainer.getBootstrapServers());

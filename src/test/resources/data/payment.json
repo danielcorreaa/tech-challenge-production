@@ -1,0 +1,37 @@
+{
+  "externalReference": "65f39d78af5fc21d9f9e8b00",
+  "orderStatus": "paid",
+  "cpfCustomer": null,
+  "itens": [
+    {
+      "skuNumber": "65efab871c5ba5178ce3e871",
+      "category": "LANCHE",
+      "title": "X salada",
+      "description": "test",
+      "unitPrice": 12.1,
+      "quantity": 1,
+      "unitMeasure": "unit",
+      "totalAmount": 12.1
+    },
+    {
+      "skuNumber": "65f30ebce7b04f544ccd8642",
+      "category": "BEBIDA",
+      "title": "Coca Cola",
+      "description": "test",
+      "unitPrice": 10.1,
+      "quantity": 1,
+      "unitMeasure": "unit",
+      "totalAmount": 10.1
+    },
+    {
+      "skuNumber": "65f30ed6e7b04f544ccd8643",
+      "category": "ACOMPANHAMENTO",
+      "title": "Bolo de coco",
+      "description": "test",
+      "unitPrice": 15.1,
+      "quantity": 1,
+      "unitMeasure": "unit",
+      "totalAmount": 15.1
+    }
+  ]
+}

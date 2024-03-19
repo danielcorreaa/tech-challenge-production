@@ -1,6 +1,7 @@
 package com.techchallenge.infrastructure.message.consumer;
 
 import com.techchallenge.application.usecases.ProductionUseCase;
+import com.techchallenge.domain.entity.Production;
 import com.techchallenge.domain.enums.StatusOrder;
 import com.techchallenge.infrastructure.message.consumer.dto.PaymentDto;
 import com.techchallenge.infrastructure.message.consumer.mapper.ProductionMessageMapper;
@@ -27,9 +28,14 @@ public class PaymentConsumer {
    @KafkaListener(topics = "${kafka.topic.consumer.payment.topic}", groupId = "${kafka.topic.consumer.payment.groupId}",
             containerFactory = "kafkaListenerContainerFactoryPaymentDto")
     public void listenPayment(PaymentDto message, Acknowledgment ack) {
-        log.info("Received Message Payment: {}" + message);
+        log.info("Received Message Payment: {}" , message);
         try {
-            productionUseCase.preparation(message.orderId());
+
+            Production production = new Production(message.orderId(),
+                    StatusOrder.EM_PREPARACAO.name(),
+                    mapper.toProducts(message.products()));
+
+            productionUseCase.insert(production);
             ack.acknowledge();
             latch.countDown();
         }catch (Exception ex){

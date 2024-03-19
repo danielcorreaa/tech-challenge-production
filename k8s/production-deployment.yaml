@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: production
-        image: daniel36/tech-challenge-production:02
+        image: daniel36/tech-challenge-production:latest
         imagePullPolicy: IfNotPresent
         ports:
           - name: http

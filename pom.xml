@@ -15,7 +15,7 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
-		<tech.challenge.core.version>0.0.2</tech.challenge.core.version>
+		<tech.challenge.core.version>0.0.3</tech.challenge.core.version>
 		<testcontainers.version>1.17.6</testcontainers.version>
 		<sonar.organization>danielcorreaa</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
