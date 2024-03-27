@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/v1/production")
+@RequestMapping("production/api/v1")
 public class ProductionApi {
 
     private ProductionUseCase productionUseCase;

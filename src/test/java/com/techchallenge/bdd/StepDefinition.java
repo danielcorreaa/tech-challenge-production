@@ -18,7 +18,7 @@ public class StepDefinition {
 
     private String orderId;
 
-    private String ENDPOINT_PRODUCTION = "http://localhost:8085/api/v1/production";
+    private String ENDPOINT_PRODUCTION = "http://localhost:8085/tech-challenge-production/production/api/v1";
 
 
 
