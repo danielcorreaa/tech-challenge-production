@@ -84,7 +84,7 @@ class ProductionApiTest {
         ProductionEntity production = new ProductionHelper().getProductionEntity("85255", "EM_PREPARACAO", products );
         when(productionRepository.findById("85255")).thenReturn(Optional.of(production));
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/v1/production/ready/85255").contentType(MediaType.APPLICATION_JSON))
+        MvcResult mvcResult = mockMvc.perform(put("/production/api/v1/ready/85255").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         Optional<Result<ProductionResponse>> response = getParse(mvcResult);
@@ -105,7 +105,7 @@ class ProductionApiTest {
         ProductionEntity production = new ProductionHelper().getProductionEntity("85255", "PRONTO", products );
         when(productionRepository.findById("85255")).thenReturn(Optional.of(production));
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/v1/production/finish/85255").contentType(MediaType.APPLICATION_JSON))
+        MvcResult mvcResult = mockMvc.perform(put("/production/api/v1/finish/85255").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         Optional<Result<ProductionResponse>> response = getParse(mvcResult);
@@ -127,7 +127,7 @@ class ProductionApiTest {
         ProductionEntity production = new ProductionHelper().getProductionEntity("85255", "PRONTO", products );
         when(productionRepository.findById("85255")).thenReturn(Optional.of(production));
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/production/find/85255")
+        MvcResult mvcResult = mockMvc.perform(get("/production/api/v1/find/85255")
                         .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk()).andReturn();
 
@@ -151,7 +151,7 @@ class ProductionApiTest {
         ProductionEntity production = new ProductionHelper().getProductionEntity("85255", "PRONTO", products );
         when(productionRepository.findById("555")).thenReturn(Optional.of(production));
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/production/find/85255")
+        MvcResult mvcResult = mockMvc.perform(get("/production/api/v1/find/85255")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andReturn();
 
